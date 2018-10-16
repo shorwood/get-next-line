@@ -6,37 +6,39 @@
 /*   By: shorwood <shorwood@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/10/16 05:24:11 by shorwood     #+#   ##    ##    #+#       */
-/*   Updated: 2018/10/16 06:01:15 by shorwood    ###    #+. /#+    ###.fr     */
+/*   Updated: 2018/10/16 07:40:41 by shorwood    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
 
-#include <stdio.h>
+#define BUF_SIZE 10000000
 
 #include <unistd.h>
 #include "LibFt/libft.h"
 
+
+
 int		get_next_line(const int fd, char **line)
 {
-	char		*str;
 	char		*buf;
-	char		*nxt;
-	static char *ovf;
+	static char	*str;
 	ssize_t		red;
 
-	str = ovf ? ovf : ft_strnew(64UL);
-	buf = ft_strnew(64UL);
-	while ((red = read(fd, buf, 64)) > 0L)
+	if (!(str = str ? str : ft_strnew(2 * BUF_SIZE)))
+		return (-1);
+	if (!(buf = ft_strchr(str, '\n')))
 	{
-		ft_strncat(str, buf, red);
-		nxt = ft_strchr(str, '\n');
-		if (nxt)
-		{
-			*nxt = '\0';
-			*line = ft_strdup(str);
-			ovf = ft_strndup(++nxt, red);
-			return (1);
-		}
+		buf = ft_strnew(BUF_SIZE);
+		red = read(fd, buf, BUF_SIZE);
+			str = ft_strncat(str, buf, red);
+		if (red > 0)
+			get_next_line(fd, line);
+		return (red > 0);
 	}
-	return (0);
+	*buf = '\0';
+	*line = ft_strdup(str);
+	buf = ft_strdup(buf + 1);
+	free(str);
+	str = buf;
+	return (1);
 }
