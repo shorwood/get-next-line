@@ -6,13 +6,15 @@
 /*   By: shorwood <shorwood@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/10/16 05:24:11 by shorwood     #+#   ##    ##    #+#       */
-/*   Updated: 2018/10/16 05:29:14 by shorwood    ###    #+. /#+    ###.fr     */
+/*   Updated: 2018/10/16 06:01:15 by shorwood    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
 
+#include <stdio.h>
+
 #include <unistd.h>
-#include "libft/libft.h"
+#include "LibFt/libft.h"
 
 int		get_next_line(const int fd, char **line)
 {
@@ -27,11 +29,12 @@ int		get_next_line(const int fd, char **line)
 	while ((red = read(fd, buf, 64)) > 0L)
 	{
 		ft_strncat(str, buf, red);
-		nxt = ft_strchr(str, '\r');
+		nxt = ft_strchr(str, '\n');
 		if (nxt)
 		{
-			*line = ft_strdup(str);
 			*nxt = '\0';
+			*line = ft_strdup(str);
+			ovf = ft_strndup(++nxt, red);
 			return (1);
 		}
 	}
