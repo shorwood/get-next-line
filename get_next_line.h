@@ -6,7 +6,7 @@
 /*   By: shorwood <shorwood@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/10/16 05:01:38 by shorwood     #+#   ##    ##    #+#       */
-/*   Updated: 2018/10/26 19:19:58 by shorwood    ###    #+. /#+    ###.fr     */
+/*   Updated: 2018/10/28 19:26:00 by shorwood    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
@@ -16,7 +16,7 @@
 
 # include <unistd.h>
 # include "libft.h"
-# define BUFF_SIZE 1
+# define BUFF_SIZE 1000
 
 int					get_next_line(const int fd, char **line);
 
