@@ -1,1 +1,0 @@
-/Users/shorwood/LibFt/ft_strcpy.c
