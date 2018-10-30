@@ -6,7 +6,7 @@
 /*   By: shorwood <shorwood@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/10/16 04:41:34 by shorwood     #+#   ##    ##    #+#       */
-/*   Updated: 2018/10/30 01:13:30 by shorwood    ###    #+. /#+    ###.fr     */
+/*   Updated: 2018/10/30 03:06:11 by shorwood    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
@@ -54,8 +54,8 @@ int		main(void)
 	fd2 = open("test02.txt", O_RDONLY);
 	test(fd2, 3);
 	close(fd2);
-	/*test(fd2, 1);
-	fd3 = open("test03.txt", O_RDONLY);
+	test(fd2, 1);
+	/*fd3 = open("test03.txt", O_RDONLY);
 	test(fd3, 10);*/
 	return (0);
 }
