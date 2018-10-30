@@ -6,7 +6,7 @@
 /*   By: shorwood <shorwood@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/10/16 05:01:38 by shorwood     #+#   ##    ##    #+#       */
-/*   Updated: 2018/10/28 19:26:00 by shorwood    ###    #+. /#+    ###.fr     */
+/*   Updated: 2018/10/30 00:53:00 by shorwood    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
@@ -15,19 +15,11 @@
 # define _GET_NEXT_LINE_H
 
 # include <unistd.h>
+# include <stdlib.h>
+# include <limits.h>
 # include "libft.h"
-# define BUFF_SIZE 1000
+# define BUFF_SIZE 1
 
-int					get_next_line(const int fd, char **line);
-
-
-
-typedef struct		s_gnl
-{
-	int				fd;
-	char			*pipe;
-	ssize_t			read;
-	struct s_gnl	*next;
-}					t_gnl;
+int		get_next_line(const int fd, char **line);
 
 #endif
