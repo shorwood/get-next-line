@@ -9,5 +9,6 @@
 #--- Include files to render.
 !*.h
 !*.c
-!libft/**
+!libft
+!Makefile
 !auteur
