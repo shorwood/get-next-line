@@ -6,7 +6,7 @@
 /*   By: shorwood <shorwood@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/10/16 05:24:11 by shorwood     #+#   ##    ##    #+#       */
-/*   Updated: 2018/10/30 06:51:03 by shorwood    ###    #+. /#+    ###.fr     */
+/*   Updated: 2018/10/30 06:58:43 by shorwood    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
@@ -111,14 +111,14 @@ static int	gnl_end(char **pipe, char **line)
 ** works and avoids memory leaks. It 'only' takes 82kB of RAM to accomodate
 ** for all the possible file descriptors. This part could have been handled
 ** with a dynamic array or a linked list but ehhh. The functions first checks
-** for errors and returns -1 if it has found one. Then it loops like this: 
+** for errors and returns -1 if it has found one. Then it loops like this:
 ** reads the file -> send the lines if it has found some. If not it will read
 ** the file again. If we have one last line, then 'gnl_end' will handle it.
 */
 
 int			get_next_line(const int fd, char **line)
 {
-	static char		*pipe[OPEN_MAX] = {NULL};
+	static char		*pipe[OPEN_MAX] = { NULL };
 	ssize_t			len;
 
 	if (gnl_error(fd, line))
