@@ -6,14 +6,12 @@
 /*   By: shorwood <shorwood@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/10/16 05:24:11 by shorwood     #+#   ##    ##    #+#       */
-/*   Updated: 2018/10/30 06:58:43 by shorwood    ###    #+. /#+    ###.fr     */
+/*   Updated: 2018/11/03 16:54:00 by shorwood    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
 
-#include <stdlib.h>
 #include <unistd.h>
-#include <limits.h>
 #include "libft/libft.h"
 #include "get_next_line.h"
 
@@ -24,13 +22,13 @@
 /*
 ** Checks for errors in the parameters and returns true if there one.
 ** One of the errors is either the file descriptor being below 0 or above
-** the limit of 'OPEN_MAX' which is the maximum of files that can be opened
-** at once by one program. This macro can be found in <limits.h>
+** the limit of 'FD_MAX' which is the maximum of files that can be opened
+** at once by this program.
 */
 
 static int	gnl_error(const int fd, char **line)
 {
-	return (fd < 0 || fd > OPEN_MAX || !line || BUFF_SIZE < 1);
+	return (fd < 0 || fd > FD_MAX || !line || BUFF_SIZE < 1);
 }
 
 /*
@@ -60,7 +58,7 @@ static int	gnl_read(const int fd, char **pipe, ssize_t *len)
 
 /*
 ** Checks if so far we have a complete line by looking for a newline
-** character. If no newline is found, this function is (kinda) bypassed. If
+** character. If no newline is found, this function is (kinda) ignored. If
 ** a newline is found, the current line is duplicated and set to the 'line'
 ** variable. Everything after the newline character is duplicated into a new
 ** string in 'pipe'. The old pipe string is then freed.
@@ -92,12 +90,12 @@ static int	gnl_line(char **pipe, char **line)
 ** is called once again; So we don't duplicate the last line more than once.
 */
 
-static int	gnl_end(char **pipe, char **line)
+static int	gnl_end(char *pipe, char **line)
 {
-	if (!line || !pipe || !*pipe || !**pipe)
+	if (!line || !pipe || !*pipe)
 		return (0);
-	*line = ft_strdup(*pipe);
-	**pipe = '\0';
+	*line = ft_strdup(pipe);
+	*pipe = '\0';
 	return (1);
 }
 
@@ -106,30 +104,30 @@ static int	gnl_end(char **pipe, char **line)
 */
 
 /*
-** This function use a static string array to store read string into a pipe.
-** Each file descriptor has it's own string. This method is lazy as fuck but it
-** works and avoids memory leaks. It 'only' takes 82kB of RAM to accomodate
-** for all the possible file descriptors. This part could have been handled
-** with a dynamic array or a linked list but ehhh. The functions first checks
-** for errors and returns -1 if it has found one. Then it loops like this:
-** reads the file -> send the lines if it has found some. If not it will read
-** the file again. If we have one last line, then 'gnl_end' will handle it.
+** This part could have been handled with a dynamic array or a linked list
+** but ehhh. The functions first checks for errors and returns -1 if it has
+** found one. Then it loops like this: reads the file -> send the lines if it
+** has found some. If not it will read the file again. If we have one last line,
+** then 'gnl_end' will handle it. This function use a static string array to
+** store read string into a pipe. Each file descriptor has it's own string.
+** This method is lazy as fuck but it works and avoids memory leaks. It only
+** takes 1kb of RAM to accomodate for 1024 possible file descriptors.
 */
 
 int			get_next_line(const int fd, char **line)
 {
-	static char		*pipe[OPEN_MAX] = { NULL };
+	static char		*pipes[FD_MAX] = { NULL };
 	ssize_t			len;
 
 	if (gnl_error(fd, line))
 		return (-1);
 	while (1)
 	{
-		if (!gnl_read(fd, pipe + fd, &len))
+		if (!gnl_read(fd, &pipes[fd], &len))
 			return (-1);
-		if (gnl_line(pipe + fd, line))
+		if (gnl_line(&pipes[fd], line))
 			return (1);
 		if (len < BUFF_SIZE)
-			return (gnl_end(pipe + fd, line));
+			return (gnl_end(pipes[fd], line));
 	}
 }
