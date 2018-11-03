@@ -15,52 +15,52 @@ The aim of this project is to make you code a function that returns a line endin
 - Your respect of the Norm will improve the rigor of your programming. We also suspect that your approach to coding will change when you will discover that the initial state of a variable in a function can vary depending on the call of that very function.
 
 # Objectives
-- [x] Write a function that returns a line read from a file descriptor.
+- Write a function that returns a line read from a file descriptor.
 
-- [x] What we call a “line” is a succession of characters that end with **’\n’** (ascii code 0x0a) or with **End Of File (EOF)**.
+- What we call a “line” is a succession of characters that end with **’\n’** (ascii code 0x0a) or with **End Of File (EOF)**.
 
-- [x] Your function must be prototyped as follow :
+- Your function must be prototyped as follow :
 ```c
 int get_next_line(const int fd, char **line);
 ```
 
-- [x] The first parameter is the file descriptor that will be used to read.
+- The first parameter is the file descriptor that will be used to read.
 
-- [x] The second parameter is the address of a pointer to a character that will be used to save the line read from the file descriptor.
+- The second parameter is the address of a pointer to a character that will be used to save the line read from the file descriptor.
 
-- [x] The return value can be **1, 0 or -1** depending on whether a line has been read, when the reading has been completed, or if an error has happened respectively.
+- The return value can be **1, 0 or -1** depending on whether a line has been read, when the reading has been completed, or if an error has happened respectively.
 
-- [x] Your function **get_next_line** must return its result _without_ **’\n’**.
+- Your function **get_next_line** must return its result _without_ **’\n’**.
 
-- [x] Calling your function **get_next_line** in a loop will then allow you to read the text available on a file descriptor one line at a time until the end of the text, no matter the size of either the text or one of its lines.
+- Calling your function **get_next_line** in a loop will then allow you to read the text available on a file descriptor one line at a time until the end of the text, no matter the size of either the text or one of its lines.
 
-- [x] Make sure that your function behaves well when it reads from a file, from the standard output, from a redirection etc.
+- Make sure that your function behaves well when it reads from a file, from the standard output, from a redirection etc.
 
-- [x] In you header file get_next_line.h you must have at least the prototype of the function **get_next_line** and a macro that allows to choose the size of the reading buffer for the read function. This value will be modified during the defence to evaluate the strength of your function. That macro must be named BUFF_SIZE. For example:
+- In you header file get_next_line.h you must have at least the prototype of the function **get_next_line** and a macro that allows to choose the size of the reading buffer for the read function. This value will be modified during the defence to evaluate the strength of your function. That macro must be named BUFF_SIZE. For example:
 ```c
 #define BUFF_SIZE 32
 ```
 
-- [x] We consider that get_next_line has an undefined behavior if, between two calls,
+- We consider that get_next_line has an undefined behavior if, between two calls,
 the same file descriptor designs two distinct files although the reading from the first
 file was not completed.
 
-- [x] We consider also that a call to lseek(2) will never take place between two calls of
+- We consider also that a call to lseek(2) will never take place between two calls of
 the function get_next_line on the same file descriptor.
 
-- [x] Finally we consider that get_next_line has an undefined behavior when reading
+- Finally we consider that get_next_line has an undefined behavior when reading
 from a binary file. However, if you wish, you can make this behavior coherent.
 
-- [x] Global variables are forbidden.
+- Global variables are forbidden.
 
-- [x] Static variables are allowed.
+- Static variables are allowed.
 
 # Bonuses
 The project **get_next_line** is straight forward and leaves very little room for bonuses, but I am sure that you have a lot of imagination. If you ace perfectly the mandatory part, then by all means complete this bonus part to go furher. I repeat, no bonus will be taken into consideration if the mandatory part isn’t perfect.
 
-- [X] To succeed **get_next_line** with a single static variable.
+- To succeed **get_next_line** with a single static variable.
 
-- [X] To be able to manage multiple file descriptor with your **get_next_line**. For example, if the file descriptors 3, 4 and 5 are accessible for reading, then you can call **get_next_line** once on 3, once on 4, once again on 3 then once on 5 etc. without losing the reading thread on each of the descriptors.
+- To be able to manage multiple file descriptor with your **get_next_line**. For example, if the file descriptors 3, 4 and 5 are accessible for reading, then you can call **get_next_line** once on 3, once on 4, once again on 3 then once on 5 etc. without losing the reading thread on each of the descriptors.
 
 # Final Mark
 _Awaiting Evaluation_
