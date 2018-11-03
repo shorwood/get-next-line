@@ -1,6 +1,5 @@
 # Summary
-The aim of this project is to make you code a function that returns a line
-ending with a newline, read from a file descriptor
+The aim of this project is to make you code a function that returns a line ending with a newline, read from a file descriptor
 
 # Introduction
 - You are now starting to understand that it will get tricky to read data from a file descriptor if you don’t know its size beforehand. What size should your buffer be? How many times do you need to read the file descriptor to retrieve the data ?
