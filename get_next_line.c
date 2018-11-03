@@ -6,7 +6,7 @@
 /*   By: shorwood <shorwood@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/10/16 05:24:11 by shorwood     #+#   ##    ##    #+#       */
-/*   Updated: 2018/11/03 16:54:00 by shorwood    ###    #+. /#+    ###.fr     */
+/*   Updated: 2018/11/03 18:40:59 by shorwood    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
@@ -104,14 +104,14 @@ static int	gnl_end(char *pipe, char **line)
 */
 
 /*
-** This part could have been handled with a dynamic array or a linked list
-** but ehhh. The functions first checks for errors and returns -1 if it has
+** The functions first checks for errors and returns -1 if it has
 ** found one. Then it loops like this: reads the file -> send the lines if it
 ** has found some. If not it will read the file again. If we have one last line,
-** then 'gnl_end' will handle it. This function use a static string array to
-** store read string into a pipe. Each file descriptor has it's own string.
-** This method is lazy as fuck but it works and avoids memory leaks. It only
-** takes 1kb of RAM to accomodate for 1024 possible file descriptors.
+** then 'gnl_end' will handle it. This function uses a static string array to
+** store read strings into a pipe. Each file descriptor has it's own pipe.
+** This part could have been handled with a dynamic array or a linked list
+** but ehhh. It is lazy as fuck but it works and avoids memory leaks.
+** It only takes 1kb of RAM to accomodate for 1024 possible file descriptors.
 */
 
 int			get_next_line(const int fd, char **line)
