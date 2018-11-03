@@ -6,13 +6,13 @@
 /*   By: shorwood <shorwood@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/10/16 05:24:11 by shorwood     #+#   ##    ##    #+#       */
-/*   Updated: 2018/11/03 18:40:59 by shorwood    ###    #+. /#+    ###.fr     */
+/*   Updated: 2018/11/03 19:55:36 by shorwood    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
 
 #include <unistd.h>
-#include "libft/libft.h"
+#include "libft.h"
 #include "get_next_line.h"
 
 /*
