@@ -6,7 +6,7 @@
 #    By: shorwood <shorwood@student.le-101.fr>      +:+   +:    +:    +:+      #
 #                                                  #+#   #+    #+    #+#       #
 #    Created: 2018/07/16 12:26:44 by shorwood     #+#   ##    ##    #+#        #
-#    Updated: 2018/10/29 18:50:42 by shorwood    ###    #+. /#+    ###.fr      #
+#    Updated: 2018/11/03 22:25:09 by shorwood    ###    #+. /#+    ###.fr      #
 #                                                          /                   #
 #                                                         /                    #
 # **************************************************************************** #
@@ -29,9 +29,6 @@ SRC	= $(wildcard $(DSRC)/*.c)
 #--- Default instruction to make the library.
 all: $(NAME)
 
-#--- Default instruction to make the library.
-deploy: all clean
-
 # **************************************************************************** #
 
 #--- Pull C files from the defined pool.
@@ -50,6 +47,7 @@ deploy: all clean
 #--- Assemble static library. Depends on compiled object binary.
 $(NAME): $(SRC:%.c=%.o)
 	$(LC) $(LFLAGS) $@ $?
+
 # **************************************************************************** #
 
 clean:
