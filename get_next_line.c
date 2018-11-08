@@ -6,7 +6,7 @@
 /*   By: shorwood <shorwood@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/10/16 05:24:11 by shorwood     #+#   ##    ##    #+#       */
-/*   Updated: 2018/11/08 23:28:25 by shorwood    ###    #+. /#+    ###.fr     */
+/*   Updated: 2018/11/08 23:29:48 by shorwood    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
@@ -40,11 +40,7 @@ static int	gnl_read(char **pipe, const int fd, ssize_t *len)
 	{
 		*len = read(fd, buf, BUFF_SIZE);
 		if (!*len)
-		{
 			return (0);
-			free(*pipe);
-			*pipe = NULL;
-		}
 		buf[*len] = '\0';
 		if (!(buf_pipe = ft_strjoin(*pipe, buf)))
 			return (-1);
