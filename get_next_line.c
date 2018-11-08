@@ -6,7 +6,7 @@
 /*   By: shorwood <shorwood@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/10/16 05:24:11 by shorwood     #+#   ##    ##    #+#       */
-/*   Updated: 2018/11/08 12:13:21 by shorwood    ###    #+. /#+    ###.fr     */
+/*   Updated: 2018/11/08 12:15:00 by shorwood    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
@@ -85,9 +85,7 @@ static int	gnl_line(char **pipe, char **line)
 	char	*buf;
 	char	*nxt;
 
-	if (!*pipe)
-		return (0);
-	if (!(nxt = ft_strchr(*pipe, '\n')))
+	if (!*pipe || !(nxt = ft_strchr(*pipe, '\n')))
 		return (0);
 	*nxt = '\0';
 	buf = *pipe;
