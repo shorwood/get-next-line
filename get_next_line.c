@@ -6,7 +6,7 @@
 /*   By: shorwood <shorwood@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/10/16 05:24:11 by shorwood     #+#   ##    ##    #+#       */
-/*   Updated: 2018/11/08 12:15:00 by shorwood    ###    #+. /#+    ###.fr     */
+/*   Updated: 2018/11/08 23:13:37 by shorwood    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
@@ -17,129 +17,99 @@
 
 /*
 ** *****************************************************************************
-*/
-
-/*
+** While we neither have a line
 ** Reads 'BUFF_SIZE' bytes from the file descriptor and joins then to the
 ** corresponding pipe. The new joined string is created using 'strjoin'.
 ** To avoid memory leaks, the old pipe is freed. The functions returns 1 if
 ** no errors occured during the reading and string(s) allocations.
+** *****************************************************************************
 */
 
-#if (BUFF_SIZE > 8000000)
+#include <stdio.h>
+#include <string.h>
 
-static int	gnl_read(const int fd, char **pipe, ssize_t *len)
+static int	gnl_read(char **pipe, const int fd, ssize_t *len)
 {
-	char	*buff;
-	char	*buf;
+	char	buf[BUFF_SIZE + 1];
+	char	*buf_pipe;
+	size_t	len_line;
+	size_t	len_read;
 
-	if (!(buff = malloc(BUFF_SIZE + 1)))
-		return (0);
-	if ((*len = read(fd, buff, BUFF_SIZE)) > 0)
+	len_line = 0;
+	len_read = 0;
+	while (*len == BUFF_SIZE && len_line >= len_read)
 	{
-		buff[*len] = '\0';
-		if (!(buf = *pipe ? *pipe : ft_strnew(0)))
+		*len = read(fd, buf, BUFF_SIZE);
+		if (!*len)
+		{
 			return (0);
-		*pipe = ft_strjoin(buf, buff);
-		free(buf);
-		if (!pipe)
-			return (0);
-	}
-	free(buff);
-	return (*len >= 0);
-}
-
-#else
-
-static int	gnl_read(const int fd, char **pipe, ssize_t *len)
-{
-	char	buff[BUFF_SIZE + 1];
-	char	*buf;
-
-	if ((*len = read(fd, buff, BUFF_SIZE)) > 0)
-	{
-		buff[*len] = '\0';
-		buf = *pipe;
-		if (!(*pipe = ft_strjoin(*pipe, buff)))
+			free(*pipe);
+			*pipe = NULL;
+		}
+		buf[*len] = '\0';
+		if (!(buf_pipe = ft_strjoin(*pipe, buf)))
 			return (-1);
-		free(buf);
+		free(*pipe);
+		*pipe = buf_pipe;
+		len_read += *len;
+		len_line = ft_strcspn(*pipe, "\n");
 	}
-	return (*len >= 0);
+	return (0);
 }
 
-#endif
-
 /*
-** At first; Checks for errors in the parameters and exits if there one.
-** One of the errors is either the file descriptor being below 0 or above
-** the limit of 'FD_MAX' which is the maximum of files that can be opened
-** at once by this program. Then checks if so far we have a complete line
-** by looking for a newline character. If no newline is found, this function
-** returns 0 and exits. If a newline is found, the current line is duplicated
-** and set to the 'line' variable. Everything after the newline character is
-** duplicated into a new string in 'pipe'. The old pipe is then freed.
+** *****************************************************************************
+** At first, Checks if the pipe is empty or uncomplete by looking for a '\n'
+** and comparing the BUFF_SIZE with the last read() call. If the line is valid,
+** we set the line, store the overflow in the pipe, free the old pipe
+** and return 1. Otherwise we return -1 asap if an error happened.
+** *****************************************************************************
 */
 
-static int	gnl_line(char **pipe, char **line)
+static int	gnl_line(char **pipe, char **line, ssize_t *len)
 {
 	char	*buf;
-	char	*nxt;
+	ssize_t	len_line;
 
-	if (!*pipe || !(nxt = ft_strchr(*pipe, '\n')))
-		return (0);
-	*nxt = '\0';
-	buf = *pipe;
-	*line = ft_strdup(buf);
-	*pipe = ft_strdup(nxt + 1);
-	ft_strdel(&buf);
-	return (1);
-}
-
-/*
-** When we don't have anything else to read and there is no newline available
-** we enter this function that will handle the last line. We have to make sure
-** this line isn't empty otherwise we will count an empty line as a valid line.
-** Just as before we duplicate the pipe to the 'line' variable. Then we set the
-** first character of the pipe to '\0'. This will help us if 'get_next_line'
-** is called once again; So we don't duplicate the last line more than once.
-*/
-
-static int	gnl_end(char **pipe, char **line)
-{
 	if (!*pipe || !**pipe)
 		return (0);
-	*line = ft_strdup(*pipe);
-	ft_strdel(pipe);
+	len_line = ft_strcspn(*pipe, "\n");
+	if ((*pipe)[len_line] != '\n' && *len == BUFF_SIZE)
+		return (0);
+	if (!(*line = ft_strndup(*pipe, len_line)))
+		return (-1);
+	if (!(buf = ft_strdup(*pipe + len_line + (*len > 0))))
+		return (-1);
+	free(*pipe);
+	*pipe = buf;
 	return (1);
 }
 
 /*
 ** *****************************************************************************
-*/
-
-/*
-** The functions first checks for errors and returns -1 if it has
-** found one. Then it loops like this: reads the file -> send the lines if it
-** has found some. If not it will read the file again. If we have one last line,
-** then 'gnl_end' will handle it. This function uses a static string array to
-** store read strings into a pipe. Each file descriptor has it's own pipe.
-** This part could have been handled with a dynamic array or a linked list
-** but ehhh. It is lazy as fuck but it works and avoids memory leaks.
-** It only takes 1kb of RAM to accomodate for 1024 possible file descriptors.
+** The functions first checks for errors and returns -1 if it has found one.
+** Then it will check, return and set the line if one is available in the pipe.
+** If not, the function then reads from the file descriptor and joins the read
+** bytes into the pipe until it has reached the end of file or a newline.
+** now that we are sure we have a complete line, we return and set the line.
+** *****************************************************************************
 */
 
 int			get_next_line(const int fd, char **line)
 {
-	static char		*pipe[FD_MAX] = { NULL };
+	static char		*pipes[GNL_FD_MAX] = { NULL };
+	char			**pipe;
+	int				ret;
 	ssize_t			len;
 
-	if (fd < 0 || fd >= FD_MAX || !line || BUFF_SIZE < 1)
+	if (fd < 0 || fd >= GNL_FD_MAX || !line || BUFF_SIZE < 1 ||
+		read(fd, NULL, 0) < 0)
 		return (-1);
-	while (1)
-		if (!gnl_read(fd, &pipe[fd], &len))
-			return (-1);
-		else if (gnl_line(&pipe[fd], line))
-			return (1);
-		else if (len < BUFF_SIZE)
-			return (gnl_end(&pipe[fd], line));
+	pipe = &pipes[fd];
+	len = BUFF_SIZE;
+	if ((ret = gnl_line(pipe, line, &len)))
+		return (ret);
+	if ((ret = gnl_read(pipe, fd, &len)))
+		return (ret);
+	return (gnl_line(pipe, line, &len));
 }
