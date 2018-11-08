@@ -6,7 +6,7 @@
 /*   By: shorwood <shorwood@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/10/16 05:24:11 by shorwood     #+#   ##    ##    #+#       */
-/*   Updated: 2018/11/08 10:05:38 by shorwood    ###    #+. /#+    ###.fr     */
+/*   Updated: 2018/11/08 11:27:22 by shorwood    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
@@ -20,31 +20,20 @@
 */
 
 /*
-** Checks for errors in the parameters and returns true if there one.
-** One of the errors is either the file descriptor being below 0 or above
-** the limit of 'FD_MAX' which is the maximum of files that can be opened
-** at once by this program.
-*/
-
-static int	gnl_error(const int fd, char **line)
-{
-	return (fd < 0 || fd >= FD_MAX || !line || BUFF_SIZE < 1 ||
-		read(fd, NULL, 0) > 0);
-}
-
-/*
 ** Reads 'BUFF_SIZE' bytes from the file descriptor and joins then to the
 ** corresponding pipe. The new joined string is created using 'strjoin'.
 ** To avoid memory leaks, the old pipe is freed. The functions returns 1 if
 ** no errors occured during the reading and string(s) allocations.
 */
 
+#if (BUFF_SIZE > 8000000)
+
 static int	gnl_read(const int fd, char **pipe, ssize_t *len)
 {
 	char	*buff;
 	char	*buf;
 
-	if (!pipe || !(buff = malloc(BUFF_SIZE + 1)))
+	if (!(buff = malloc(BUFF_SIZE + 1)))
 		return (0);
 	if ((*len = read(fd, buff, BUFF_SIZE)) > 0)
 	{
@@ -60,12 +49,37 @@ static int	gnl_read(const int fd, char **pipe, ssize_t *len)
 	return (*len >= 0);
 }
 
+#else
+
+static int	gnl_read(const int fd, char **pipe, ssize_t *len)
+{
+	char	buff[BUFF_SIZE + 1];
+	char	*buf;
+
+	if ((*len = read(fd, buff, BUFF_SIZE)) > 0)
+	{
+		buff[*len] = '\0';
+		if (!(buf = *pipe ? *pipe : ft_strnew(0)))
+			return (0);
+		*pipe = ft_strjoin(buf, buff);
+		free(buf);
+		if (!pipe)
+			return (0);
+	}
+	return (*len >= 0);
+}
+
+#endif
+
 /*
-** Checks if so far we have a complete line by looking for a newline
-** character. If no newline is found, this function returns 0 and exits. If
-** a newline is found, the current line is duplicated and set to the 'line'
-** variable. Everything after the newline character is duplicated into a new
-** string in 'pipe'. The old pipe string is then freed.
+** At first; Checks for errors in the parameters and exits if there one.
+** One of the errors is either the file descriptor being below 0 or above
+** the limit of 'FD_MAX' which is the maximum of files that can be opened
+** at once by this program. Then checks if so far we have a complete line
+** by looking for a newline character. If no newline is found, this function
+** returns 0 and exits. If a newline is found, the current line is duplicated
+** and set to the 'line' variable. Everything after the newline character is
+** duplicated into a new string in 'pipe'. The old pipe is then freed.
 */
 
 static int	gnl_line(char **pipe, char **line)
@@ -73,12 +87,13 @@ static int	gnl_line(char **pipe, char **line)
 	char	*buf;
 	char	*nxt;
 
-	if (!line || !pipe || !*pipe)
+	if (!*pipe)
 		return (0);
 	if (!(nxt = ft_strchr(*pipe, '\n')))
 		return (0);
 	*nxt = '\0';
 	buf = *pipe;
+	ft_strdel(line);
 	*line = ft_strdup(buf);
 	*pipe = ft_strdup(nxt + 1);
 	ft_strdel(&buf);
@@ -96,8 +111,9 @@ static int	gnl_line(char **pipe, char **line)
 
 static int	gnl_end(char **pipe, char **line)
 {
-	if (!line || !pipe || !*pipe || !**pipe)
+	if (!*pipe || !**pipe)
 		return (0);
+	ft_strdel(line);
 	*line = ft_strdup(*pipe);
 	ft_strdel(pipe);
 	return (1);
@@ -123,8 +139,9 @@ int			get_next_line(const int fd, char **line)
 	static char		*pipe[FD_MAX] = { NULL };
 	ssize_t			len;
 
-	if (gnl_error(fd, line))
+	if (fd < 0 || fd >= FD_MAX || !line || BUFF_SIZE < 1)
 		return (-1);
+	*line = NULL;
 	while (1)
 		if (!gnl_read(fd, &pipe[fd], &len))
 			return (-1);
