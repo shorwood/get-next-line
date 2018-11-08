@@ -6,7 +6,7 @@
 /*   By: shorwood <shorwood@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/10/16 05:24:11 by shorwood     #+#   ##    ##    #+#       */
-/*   Updated: 2018/11/08 23:13:37 by shorwood    ###    #+. /#+    ###.fr     */
+/*   Updated: 2018/11/08 23:28:25 by shorwood    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
@@ -17,7 +17,6 @@
 
 /*
 ** *****************************************************************************
-** While we neither have a line
 ** Reads 'BUFF_SIZE' bytes from the file descriptor and joins then to the
 ** corresponding pipe. The new joined string is created using 'strjoin'.
 ** To avoid memory leaks, the old pipe is freed. The functions returns 1 if
@@ -63,6 +62,12 @@ static int	gnl_read(char **pipe, const int fd, ssize_t *len)
 ** and comparing the BUFF_SIZE with the last read() call. If the line is valid,
 ** we set the line, store the overflow in the pipe, free the old pipe
 ** and return 1. Otherwise we return -1 asap if an error happened.
+** *****************************************************************************
+** This function uses a static string array to store read strings into a pipe.
+** Each file descriptor has it's own pipe. This part could have been handled
+** with a dynamic array or a linked list but ehhh. It is lazy as fuck but it
+** works and avoids memory leaks. It only takes 1kb of RAM to accomodate for
+** 1024 possible file descriptors.
 ** *****************************************************************************
 */
 
