@@ -6,7 +6,7 @@
 /*   By: shorwood <shorwood@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/10/16 05:24:11 by shorwood     #+#   ##    ##    #+#       */
-/*   Updated: 2018/11/08 12:10:20 by shorwood    ###    #+. /#+    ###.fr     */
+/*   Updated: 2018/11/08 12:13:21 by shorwood    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
@@ -91,7 +91,6 @@ static int	gnl_line(char **pipe, char **line)
 		return (0);
 	*nxt = '\0';
 	buf = *pipe;
-	ft_strdel(line);
 	*line = ft_strdup(buf);
 	*pipe = ft_strdup(nxt + 1);
 	ft_strdel(&buf);
@@ -111,7 +110,6 @@ static int	gnl_end(char **pipe, char **line)
 {
 	if (!*pipe || !**pipe)
 		return (0);
-	ft_strdel(line);
 	*line = ft_strdup(*pipe);
 	ft_strdel(pipe);
 	return (1);
@@ -139,7 +137,6 @@ int			get_next_line(const int fd, char **line)
 
 	if (fd < 0 || fd >= FD_MAX || !line || BUFF_SIZE < 1)
 		return (-1);
-	*line = NULL;
 	while (1)
 		if (!gnl_read(fd, &pipe[fd], &len))
 			return (-1);
