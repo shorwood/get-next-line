@@ -6,12 +6,13 @@
 /*   By: shorwood <shorwood@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/10/12 09:05:38 by shorwood     #+#   ##    ##    #+#       */
-/*   Updated: 2018/10/30 01:21:52 by shorwood    ###    #+. /#+    ###.fr     */
+/*   Updated: 2018/11/08 12:00:40 by shorwood    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
 
 #include <stdlib.h>
+#include "libft.h"
 
 char	*ft_strjoin(char const *s1, char const *s2)
 {
@@ -19,8 +20,10 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	char	*buf;
 	size_t	len;
 
-	if (!s1 || !s2)
-		return (NULL);
+	if (!s1)
+		return (ft_strdup(s2));
+	if (!s2)
+		return (ft_strdup(s1));
 	len = 1UL;
 	buf = (char*)s1;
 	while (*buf++)
