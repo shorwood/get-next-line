@@ -6,7 +6,7 @@
 /*   By: shorwood <shorwood@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/10/16 05:24:11 by shorwood     #+#   ##    ##    #+#       */
-/*   Updated: 2018/11/09 01:32:30 by shorwood    ###    #+. /#+    ###.fr     */
+/*   Updated: 2018/11/09 03:23:47 by shorwood    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
@@ -23,9 +23,6 @@
 ** no errors occured during the reading and string(s) allocations.
 ** *****************************************************************************
 */
-
-#include <stdio.h>
-#include <string.h>
 
 static int	gnl_read(char **pipe, const int fd, ssize_t *len)
 {
