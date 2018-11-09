@@ -6,7 +6,7 @@
 /*   By: shorwood <shorwood@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/10/16 05:24:11 by shorwood     #+#   ##    ##    #+#       */
-/*   Updated: 2018/11/08 23:29:48 by shorwood    ###    #+. /#+    ###.fr     */
+/*   Updated: 2018/11/09 01:30:57 by shorwood    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
@@ -59,28 +59,28 @@ static int	gnl_read(char **pipe, const int fd, ssize_t *len)
 ** we set the line, store the overflow in the pipe, free the old pipe
 ** and return 1. Otherwise we return -1 asap if an error happened.
 ** *****************************************************************************
-** This function uses a static string array to store read strings into a pipe.
-** Each file descriptor has it's own pipe. This part could have been handled
-** with a dynamic array or a linked list but ehhh. It is lazy as fuck but it
-** works and avoids memory leaks. It only takes 1kb of RAM to accomodate for
-** 1024 possible file descriptors.
-** *****************************************************************************
 */
+
+#include <string.h>
 
 static int	gnl_line(char **pipe, char **line, ssize_t *len)
 {
 	char	*buf;
-	ssize_t	len_line;
+	char	*nxt;
 
 	if (!*pipe || !**pipe)
 		return (0);
-	len_line = ft_strcspn(*pipe, "\n");
-	if ((*pipe)[len_line] != '\n' && *len == BUFF_SIZE)
+	nxt = ft_strchr(*pipe, '\n');
+	if (!nxt && *len == BUFF_SIZE)
 		return (0);
-	if (!(*line = ft_strndup(*pipe, len_line)))
+	if (nxt)
+		*nxt = '\0';
+	if (!(*line = ft_strdup(*pipe)))
 		return (-1);
-	if (!(buf = ft_strdup(*pipe + len_line + (*len > 0))))
-		return (-1);
+	buf = NULL;
+	if (nxt)
+		if (!(buf = ft_strdup(nxt + 1)))
+			return (-1);
 	free(*pipe);
 	*pipe = buf;
 	return (1);
@@ -93,6 +93,12 @@ static int	gnl_line(char **pipe, char **line, ssize_t *len)
 ** If not, the function then reads from the file descriptor and joins the read
 ** bytes into the pipe until it has reached the end of file or a newline.
 ** now that we are sure we have a complete line, we return and set the line.
+** *****************************************************************************
+** This function uses a static string array to store read strings into a pipe.
+** Each file descriptor has it's own pipe. This part could have been handled
+** with a dynamic array or a linked list but ehhh. It is lazy as fuck but it
+** works and avoids memory leaks. It only takes 1kb of RAM to accomodate for
+** 1024 possible file descriptors.
 ** *****************************************************************************
 */
 
