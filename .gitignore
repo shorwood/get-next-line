@@ -8,4 +8,10 @@
 #--- Include project files.
 !get_next_line.c
 !get_next_line.h
-!libft/*
+
+#--- Include library files.
+!/libft/
+!/libft/*.c
+!/libft/Makefile
+!/libft/includes
+!/libft/includes/*.h
