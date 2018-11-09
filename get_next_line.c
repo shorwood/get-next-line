@@ -6,7 +6,7 @@
 /*   By: shorwood <shorwood@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/10/16 05:24:11 by shorwood     #+#   ##    ##    #+#       */
-/*   Updated: 2018/11/09 01:30:57 by shorwood    ###    #+. /#+    ###.fr     */
+/*   Updated: 2018/11/09 01:32:30 by shorwood    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
@@ -60,8 +60,6 @@ static int	gnl_read(char **pipe, const int fd, ssize_t *len)
 ** and return 1. Otherwise we return -1 asap if an error happened.
 ** *****************************************************************************
 */
-
-#include <string.h>
 
 static int	gnl_line(char **pipe, char **line, ssize_t *len)
 {
