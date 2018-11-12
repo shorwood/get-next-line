@@ -6,7 +6,7 @@
 /*   By: shorwood <shorwood@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/10/16 05:24:11 by shorwood     #+#   ##    ##    #+#       */
-/*   Updated: 2018/11/09 06:17:56 by shorwood    ###    #+. /#+    ###.fr     */
+/*   Updated: 2018/11/12 19:08:09 by shorwood    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
@@ -105,10 +105,10 @@ int			get_next_line(const int fd, char **line)
 
 	if (fd < 0 || fd >= GNL_FD_MAX || !line || BUFF_SIZE < 1)
 		return (-1);
-	if (read(fd, NULL, 0) < 0)
-		ft_strdel(pipes + fd);
-	pipe = &pipes[fd];
+	pipe = pipes + fd;
 	len = BUFF_SIZE;
+	if (read(fd, NULL, 0) < 0)
+		ft_strdel(pipe);
 	if ((ret = gnl_read(pipe, fd, &len)))
 		return (ret);
 	return (gnl_line(pipe, line, &len));
