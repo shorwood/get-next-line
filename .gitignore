@@ -3,7 +3,7 @@
 #--- Include documentation and git files.
 !.gitignore
 !auteur
-!*.md
+!README.md
 
 #--- Include project files.
 !get_next_line.c
