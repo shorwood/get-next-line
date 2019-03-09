@@ -6,7 +6,7 @@
 /*   By: shorwood <shorwood@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/10/16 05:24:11 by shorwood     #+#   ##    ##    #+#       */
-/*   Updated: 2018/12/24 18:43:43 by shorwood    ###    #+. /#+    ###.fr     */
+/*   Updated: 2019/03/09 21:42:50 by shorwood    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
@@ -25,45 +25,42 @@
 ** *****************************************************************************
 */
 
-static int	gnl_read(t_gnl *fd, char **line)
+static int		gnl_read(t_gnl *gnl, char **line)
 {
-	ssize_t	len;
-	ssize_t	n;
 	char	*buf;
-	
-	len = BUFF_SIZE;
-	if (!fd)
+	int		peak;
+
+	peak = 1;
+	if (!gnl || !gnl->len)
+		return (!gnl ? -1 : 0);
+	buf = gnl->pipe[0] ? (char*)gnl->pipe[0]->data : NULL;
+	while (!ft_strchr(buf, '\n') && (gnl->len == BUFF_SIZE || peak--))
+		if (!(buf = ft_strnew(BUFF_SIZE))
+			|| (gnl->len = read(gnl->fd, buf, BUFF_SIZE)) < 0
+			|| !ft_lstpush(gnl->pipe, buf))
+			return (-1);
+	ft_strsep(&buf, "\n");
+	if (!(*line = ft_lstcat(gnl->pipe)))
 		return (-1);
-	if (fd->eof)
+	if (gnl->len <= 0 && !ft_strlen(*line) && !ft_strlen(buf))
+	{
+		ft_lstclr(gnl->pipe, 1);
+		ft_strdel(line);
 		return (0);
-
-
-	buf = fd->pipe[0] ? (char*)fd->pipe[0]->data : NULL;
-
-
-	while (!ft_strchr(buf, '\n') && len == BUFF_SIZE)
-		if (!(buf = ft_strnew(BUFF_SIZE)))
-			return (-1);
-		else if ((len = read(fd->fd, buf, BUFF_SIZE)) < 0)
-			return (-1);
-		else if (!ft_lstpush(fd->pipe, buf))
-			return (-1);
-
-
-	buf[(n = ft_strcspn(buf, "\n"))] = '\0';
-	if (!(*line = ft_lstcat(fd->pipe)))
-		return (-1);
-	if (!(buf = ft_strdup(buf + n + 1)))
-		return (-1);
-
-
-	ft_lstclr(fd->pipe, 1);
-	fd->pipe = ft_lstnew(1, buf);
-	fd->eof = len < BUFF_SIZE && !ft_strlen(buf);
-
-
+	}
+	buf = ft_strdup(buf);
+	ft_lstclr(gnl->pipe, 1);
+	gnl->pipe = ft_lstnew(1, buf);
 	return (1);
 }
+
+/*
+** *****************************************************************************
+** Search a specific file descriptor from the static list of 'GNL handlers'.
+** If not found, will create and initialize one for us. Each 'GNL handlers'
+** contains the file decriptor value, a list of strings, and an EOF flag.
+** *****************************************************************************
+*/
 
 static t_gnl	*gnl_pipe(int fd)
 {
@@ -81,7 +78,7 @@ static t_gnl	*gnl_pipe(int fd)
 	if (!(gnl = (t_gnl*)malloc(sizeof(t_gnl))))
 		return (NULL);
 	gnl->fd = fd;
-	gnl->eof = 0;
+	gnl->len = BUFF_SIZE;
 	gnl->pipe = ft_lstnew(0);
 	ft_lstadd(&plst, gnl);
 	return (gnl);
@@ -103,7 +100,7 @@ static t_gnl	*gnl_pipe(int fd)
 ** *****************************************************************************
 */
 
-int			get_next_line(const int fd, char **line)
+int				get_next_line(const int fd, char **line)
 {
 	if (!line || fd == -1)
 		return (-1);
