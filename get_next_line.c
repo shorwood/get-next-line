@@ -6,78 +6,85 @@
 /*   By: shorwood <shorwood@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/10/16 05:24:11 by shorwood     #+#   ##    ##    #+#       */
-/*   Updated: 2018/11/12 19:08:09 by shorwood    ###    #+. /#+    ###.fr     */
+/*   Updated: 2018/12/24 18:43:43 by shorwood    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
 
 #include <unistd.h>
+#include <limits.h>
 #include "libft.h"
 #include "get_next_line.h"
 
 /*
 ** *****************************************************************************
-** Reads 'BUFF_SIZE' bytes from the file descriptor and joins then to the
-** corresponding pipe. The new joined string is created using 'strjoin'.
+** Reads 'BUFF_SIZE' bytes from the file descriptor and joins them to the
+** corresponding pipe. The new joined string is created using 'strnjoin'.
 ** To avoid memory leaks, the old pipe is freed. The functions returns 1 if
 ** no errors occured during the reading and string(s) allocations.
 ** *****************************************************************************
 */
 
-static int	gnl_read(char **pipe, const int fd, ssize_t *len)
+static int	gnl_read(t_gnl *fd, char **line)
 {
-	char	buf[BUFF_SIZE + 1];
-	char	*buf_pipe;
-
-	if (*pipe && ft_strchr(*pipe, '\n'))
+	ssize_t	len;
+	ssize_t	n;
+	char	*buf;
+	
+	len = BUFF_SIZE;
+	if (!fd)
+		return (-1);
+	if (fd->eof)
 		return (0);
-	while ((*len = read(fd, buf, BUFF_SIZE)) > 0)
-	{
-		buf[*len] = '\0';
-		if (!(buf_pipe = ft_strjoin(*pipe, buf)))
+
+
+	buf = fd->pipe[0] ? (char*)fd->pipe[0]->data : NULL;
+
+
+	while (!ft_strchr(buf, '\n') && len == BUFF_SIZE)
+		if (!(buf = ft_strnew(BUFF_SIZE)))
 			return (-1);
-		free(*pipe);
-		*pipe = buf_pipe;
-		if (ft_strchr(*pipe, '\n'))
-			return (0);
-	}
-	if (*len < 0)
-		ft_strdel(pipe);
-	return (*len);
+		else if ((len = read(fd->fd, buf, BUFF_SIZE)) < 0)
+			return (-1);
+		else if (!ft_lstpush(fd->pipe, buf))
+			return (-1);
+
+
+	buf[(n = ft_strcspn(buf, "\n"))] = '\0';
+	if (!(*line = ft_lstcat(fd->pipe)))
+		return (-1);
+	if (!(buf = ft_strdup(buf + n + 1)))
+		return (-1);
+
+
+	ft_lstclr(fd->pipe, 1);
+	fd->pipe = ft_lstnew(1, buf);
+	fd->eof = len < BUFF_SIZE && !ft_strlen(buf);
+
+
+	return (1);
 }
 
-/*
-** *****************************************************************************
-** At first, Checks if the pipe is empty or uncomplete by looking for a '\n'
-** and comparing the BUFF_SIZE with the last read() call. If the line is valid,
-** we set the line, store the overflow in the pipe, free the old pipe
-** and return 1. Otherwise we return -1 asap if an error occured.
-** *****************************************************************************
-*/
-
-static int	gnl_line(char **pipe, char **line, ssize_t *len)
+static t_gnl	*gnl_pipe(int fd)
 {
-	char	*buf;
-	char	*nxt;
+	static t_lsti	plst = NULL;
+	t_gnl			*gnl;
+	t_lsti			cur;
 
-	if (!*pipe || !**pipe || *len < 0)
+	cur = plst;
+	while (cur)
 	{
-		ft_strdel(pipe);
-		return (0);
+		if (((t_gnl*)cur->data)->fd == fd)
+			return (cur->data);
+		cur = cur->next;
 	}
-	if ((nxt = ft_strchr(*pipe, '\n')))
-		*nxt = '\0';
-	if (!nxt && *len == BUFF_SIZE)
-		return (0);
-	if (!(*line = ft_strdup(*pipe)))
-		return (-1);
-	buf = NULL;
-	if (nxt)
-		if (!(buf = ft_strdup(nxt + 1)))
-			return (-1);
-	free(*pipe);
-	*pipe = buf;
-	return (1);
+	if (!(gnl = (t_gnl*)malloc(sizeof(t_gnl))))
+		return (NULL);
+	gnl->fd = fd;
+	gnl->eof = 0;
+	gnl->pipe = ft_lstnew(0);
+	ft_lstadd(&plst, gnl);
+	return (gnl);
 }
 
 /*
@@ -98,18 +105,10 @@ static int	gnl_line(char **pipe, char **line, ssize_t *len)
 
 int			get_next_line(const int fd, char **line)
 {
-	static char		*pipes[GNL_FD_MAX] = { NULL };
-	char			**pipe;
-	int				ret;
-	ssize_t			len;
-
-	if (fd < 0 || fd >= GNL_FD_MAX || !line || BUFF_SIZE < 1)
+	if (!line || fd == -1)
 		return (-1);
-	pipe = pipes + fd;
-	len = BUFF_SIZE;
+	*line = NULL;
 	if (read(fd, NULL, 0) < 0)
-		ft_strdel(pipe);
-	if ((ret = gnl_read(pipe, fd, &len)))
-		return (ret);
-	return (gnl_line(pipe, line, &len));
+		return (-1);
+	return (gnl_read(gnl_pipe(fd), line));
 }
