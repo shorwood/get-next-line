@@ -10,8 +10,4 @@
 !get_next_line.h
 
 #--- Include library files.
-!/libft/
-!/libft/*.c
-!/libft/Makefile
-!/libft/includes
-!/libft/includes/*.h
+!/libft
