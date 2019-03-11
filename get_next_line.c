@@ -6,22 +6,21 @@
 /*   By: shorwood <shorwood@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/10/16 05:24:11 by shorwood     #+#   ##    ##    #+#       */
-/*   Updated: 2019/03/09 21:42:50 by shorwood    ###    #+. /#+    ###.fr     */
+/*   Updated: 2019/03/11 17:33:28 by shorwood    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
 
 #include <unistd.h>
-#include <limits.h>
 #include "libft.h"
 #include "get_next_line.h"
 
 /*
 ** *****************************************************************************
-** Reads 'BUFF_SIZE' bytes from the file descriptor and joins them to the
-** corresponding pipe. The new joined string is created using 'strnjoin'.
-** To avoid memory leaks, the old pipe is freed. The functions returns 1 if
-** no errors occured during the reading and string(s) allocations.
+** Reads and push the file string into a list. All the strings in the list
+** are then assembled into a single string. Trailing characters after the first
+** newline character are cut and saved for later. If the end of file is
+** detected, we exit and return 0 ; else 1.
 ** *****************************************************************************
 */
 
@@ -86,17 +85,12 @@ static t_gnl	*gnl_pipe(int fd)
 
 /*
 ** *****************************************************************************
-** The functions first checks for errors and returns -1 if it has found one.
-** Then it will check, return and set the line if one is available in the pipe.
-** If not, the function then reads from the file descriptor and joins the read
-** bytes into the pipe until it has reached the end of file or a newline.
-** now that we are sure we have a complete line, we return and set the line.
-** *****************************************************************************
-** This function uses a static string array to store read strings into a pipe.
-** Each file descriptor has it's own pipe. This part could have been handled
-** with a dynamic array or a linked list but ehhh. It is lazy as fuck but it
-** works and avoids memory leaks. It only takes 1kb of RAM to accomodate for
-** 1024 possible file descriptors.
+** Each time it is called, the function will try to find if the input file
+** descriptor has already been processed. It will then either retreive the
+** corresponding 'GNL handlers' object or create it if not found. This object is
+** then send to the 'gnl_read' function that will read from the file descriptor
+** and take care of the overflow. Any error during the function will abort it
+** and send a '-1' error code.
 ** *****************************************************************************
 */
 
