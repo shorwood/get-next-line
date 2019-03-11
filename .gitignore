@@ -2,8 +2,12 @@
 
 #--- Include documentation and git files.
 !.gitignore
+!.gitmodule
 !auteur
 !README.md
+!Makefile
+!.vscode/
+!.vscode/*
 
 #--- Include project files.
 !get_next_line.c
