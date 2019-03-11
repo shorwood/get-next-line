@@ -2,7 +2,7 @@
 
 #--- Include documentation and git files.
 !.gitignore
-!.gitmodule
+!.gitmodules
 !auteur
 !README.md
 !Makefile
