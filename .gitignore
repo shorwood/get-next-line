@@ -14,4 +14,4 @@
 !get_next_line.h
 
 #--- Include library files.
-!/libft
+!libft/
