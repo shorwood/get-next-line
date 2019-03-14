@@ -6,7 +6,7 @@
 /*   By: shorwood <shorwood@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
 /*   Created: 2018/10/16 05:24:11 by shorwood     #+#   ##    ##    #+#       */
-/*   Updated: 2019/03/11 17:33:28 by shorwood    ###    #+. /#+    ###.fr     */
+/*   Updated: 2019/03/14 05:07:35 by shorwood    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
@@ -26,30 +26,29 @@
 
 static int		gnl_read(t_gnl *gnl, char **line)
 {
-	char	*buf;
-	int		peak;
+	int	peak;
 
 	peak = 1;
-	if (!gnl || !gnl->len)
-		return (!gnl ? -1 : 0);
-	buf = gnl->pipe[0] ? (char*)gnl->pipe[0]->data : NULL;
-	while (!ft_strchr(buf, '\n') && (gnl->len == BUFF_SIZE || peak--))
-		if (!(buf = ft_strnew(BUFF_SIZE))
-			|| (gnl->len = read(gnl->fd, buf, BUFF_SIZE)) < 0
-			|| !ft_lstpush(gnl->pipe, buf))
-			return (-1);
-	ft_strsep(&buf, "\n");
-	if (!(*line = ft_lstcat(gnl->pipe)))
+	if (!gnl)
 		return (-1);
-	if (gnl->len <= 0 && !ft_strlen(*line) && !ft_strlen(buf))
+	while (!ft_strchr(gnl->buf, '\n') && (gnl->len == BUFF_SIZE || peak--))
+		if (!(gnl->buf = ft_strnew(BUFF_SIZE))
+			|| (gnl->len = read(gnl->fd, gnl->buf, BUFF_SIZE)) < 0
+			|| !ft_lstpush(gnl->pipe, gnl->buf))
+			return (-1);
+	ft_strsep(&gnl->buf, "\n");
+	if ((gnl->buf && !(gnl->buf = ft_strdup(gnl->buf)))
+		|| !(*line = ft_lstcat(gnl->pipe)))
+		return (-1);
+	if (!gnl->len && !ft_strlen(*line) && !ft_strlen(gnl->buf))
 	{
-		ft_lstclr(gnl->pipe, 1);
+		gnl->len = 1;
+		ft_lstclr(gnl->pipe, 3);
 		ft_strdel(line);
 		return (0);
 	}
-	buf = ft_strdup(buf);
-	ft_lstclr(gnl->pipe, 1);
-	gnl->pipe = ft_lstnew(1, buf);
+	ft_lstclr(gnl->pipe, 7);
+	gnl->pipe = ft_lstnew(1, gnl->buf);
 	return (1);
 }
 
@@ -76,10 +75,16 @@ static t_gnl	*gnl_pipe(int fd)
 	}
 	if (!(gnl = (t_gnl*)malloc(sizeof(t_gnl))))
 		return (NULL);
+	if (!(gnl->pipe = ft_lstnew(0))
+		|| !(ft_lstadd(&plst, gnl)))
+	{
+		free(gnl->pipe);
+		free(gnl);
+		return (NULL);
+	}
 	gnl->fd = fd;
+	gnl->buf = NULL;
 	gnl->len = BUFF_SIZE;
-	gnl->pipe = ft_lstnew(0);
-	ft_lstadd(&plst, gnl);
 	return (gnl);
 }
 
@@ -96,10 +101,7 @@ static t_gnl	*gnl_pipe(int fd)
 
 int				get_next_line(const int fd, char **line)
 {
-	if (!line || fd == -1)
-		return (-1);
-	*line = NULL;
-	if (read(fd, NULL, 0) < 0)
+	if (!line || read(fd, NULL, 0) < 0)
 		return (-1);
 	return (gnl_read(gnl_pipe(fd), line));
 }
