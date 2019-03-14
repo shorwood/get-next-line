@@ -1,43 +1,40 @@
 /* ************************************************************************** */
 /*                                                          LE - /            */
 /*                                                              /             */
-/*   ft_lstjoin.c                                     .::    .:/ .      .::   */
+/*   ft_lstsplice.c                                   .::    .:/ .      .::   */
 /*                                                 +:+:+   +:    +:  +:+:+    */
 /*   By: shorwood <shorwood@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
-/*   Created: 2018/10/15 17:41:54 by shorwood     #+#   ##    ##    #+#       */
-/*   Updated: 2019/03/14 01:08:59 by shorwood    ###    #+. /#+    ###.fr     */
+/*   Created: 2019/03/13 20:15:16 by shorwood     #+#   ##    ##    #+#       */
+/*   Updated: 2019/03/14 01:08:18 by shorwood    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char		*ft_lstjoin(t_list **lst, const char *sep)
+t_list	**ft_lstsplice(t_list **lst, size_t i, size_t n)
 {
-	char	*str;
-	char	*buf;
-	char	*src;
 	t_list	*cur;
+	t_list	*prv;
+	t_list	**ret;
 
 	if (!lst || !*lst)
 		return (NULL);
-	if (!sep || !*sep)
-		return (ft_lstcat(lst));
-	if (!(str = (char*)malloc((ft_lstacc(lst, (int(*)(void *data))ft_strlen) +
-		(ft_lstlen(lst) - 1) * ft_strlen(sep) + 1) * sizeof(char))))
-		return (NULL);
-	buf = str;
+	if (!i)
+		return (ft_lstsplit(lst, n));
 	cur = *lst;
-	while (cur)
-	{
-		src = (char*)cur->data;
-		ft_strcpy(buf, src);
-		if (cur->next)
-			ft_strcpy((buf = ft_strchr(buf, '\0')), sep);
-		buf = ft_strchr(buf, '\0');
+	while (--i && cur->next)
 		cur = cur->next;
-	}
-	*buf = '\0';
-	return (str);
+	if (!(ret = (t_list**)malloc(sizeof(t_list*))))
+		return (NULL);
+	*ret = NULL;
+	if (!(prv = cur))
+		return (ret);
+	while (n-- && cur->next)
+		cur = cur->next;
+	*ret = prv->next;
+	prv->next = cur->next;
+	cur->next = NULL;
+	return (ret);
 }
