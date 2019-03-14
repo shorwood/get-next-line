@@ -1,34 +1,31 @@
 /* ************************************************************************** */
 /*                                                          LE - /            */
 /*                                                              /             */
-/*   ft_lstcat.c                                      .::    .:/ .      .::   */
+/*   ft_lstrev.c                                      .::    .:/ .      .::   */
 /*                                                 +:+:+   +:    +:  +:+:+    */
 /*   By: shorwood <shorwood@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
-/*   Created: 2018/10/15 17:41:54 by shorwood     #+#   ##    ##    #+#       */
-/*   Updated: 2019/03/14 03:15:00 by shorwood    ###    #+. /#+    ###.fr     */
+/*   Created: 2019/03/14 04:00:59 by shorwood     #+#   ##    ##    #+#       */
+/*   Updated: 2019/03/14 04:06:35 by shorwood    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
 
 #include "libft.h"
+#include <stdlib.h>
 
-char		*ft_lstcat(t_list **lst)
+t_list	**ft_lstrev(t_list **lst)
 {
-	char	*str;
-	char	*buf;
-	t_list	*cur;
+	t_list **new;
+	t_list *cur;
 
-	if (!(str = ft_strnew((ft_lstacc(lst, (int(*)(void *data))ft_strlen)))))
+	if (!lst || !*lst || !(new = ft_lstnew(0)))
 		return (NULL);
-	buf = str;
 	cur = *lst;
 	while (cur)
 	{
-		ft_strcpy(buf, (char*)cur->data);
-		buf = ft_strchr(buf, '\0');
+		ft_lstadd(new, cur->data);
 		cur = cur->next;
 	}
-	*buf = '\0';
-	return (str);
+	return (new);
 }

@@ -1,34 +1,27 @@
 /* ************************************************************************** */
 /*                                                          LE - /            */
 /*                                                              /             */
-/*   ft_lstcat.c                                      .::    .:/ .      .::   */
+/*   ft_lstget.c                                      .::    .:/ .      .::   */
 /*                                                 +:+:+   +:    +:  +:+:+    */
 /*   By: shorwood <shorwood@student.le-101.fr>      +:+   +:    +:    +:+     */
 /*                                                 #+#   #+    #+    #+#      */
-/*   Created: 2018/10/15 17:41:54 by shorwood     #+#   ##    ##    #+#       */
-/*   Updated: 2019/03/14 03:15:00 by shorwood    ###    #+. /#+    ###.fr     */
+/*   Created: 2019/03/14 03:55:33 by shorwood     #+#   ##    ##    #+#       */
+/*   Updated: 2019/03/14 03:57:45 by shorwood    ###    #+. /#+    ###.fr     */
 /*                                                         /                  */
 /*                                                        /                   */
 /* ************************************************************************** */
 
 #include "libft.h"
+#include <stdlib.h>
 
-char		*ft_lstcat(t_list **lst)
+void	*ft_lstget(t_list **lst, size_t idx)
 {
-	char	*str;
-	char	*buf;
-	t_list	*cur;
+	t_list *cur;
 
-	if (!(str = ft_strnew((ft_lstacc(lst, (int(*)(void *data))ft_strlen)))))
+	if (!lst || !*lst)
 		return (NULL);
-	buf = str;
 	cur = *lst;
-	while (cur)
-	{
-		ft_strcpy(buf, (char*)cur->data);
-		buf = ft_strchr(buf, '\0');
+	while (idx-- && cur->next)
 		cur = cur->next;
-	}
-	*buf = '\0';
-	return (str);
+	return (cur->data);
 }
