@@ -63,9 +63,11 @@ The project **get_next_line** is straight forward and leaves very little room fo
 - To be able to manage multiple file descriptor with your **get_next_line**. For example, if the file descriptors 3, 4 and 5 are accessible for reading, then you can call **get_next_line** once on 3, once on 4, once again on 3 then once on 5 etc. without losing the reading thread on each of the descriptors.
 
 # Implementation
-- The functions first checks for errors and returns -1 if it has found one. Then it will check, return and set the line if one is available in the pipe. If not, the function then reads from the file descriptor and joins the read bytes into the pipe until it has reached the end of file or a newline. now that we are sure we have a complete line, we return and set the line.
+- Each time it is called, the function will try to find if the input file descriptor has already been processed. It will then either retreive the corresponding 'GNL handlers' object or create it if not found. This object is then send to the 'gnl_read' function that will read from the file descriptor and take care of the overflow. Any error during the function will abort it and send a '-1' error code.
 
-- This function uses a static string array to store read strings into a pipe. Each file descriptor has it's own pipe. This part could have been handled with a dynamic array or a linked list but ehhh. It is lazy as fuck but it works and avoids memory leaks. It only takes 1kb of RAM to accomodate for 1024 possible file descriptors.
+- 'gnl_read' will read and push the file strings into a list. All the strings in the list are then assembled into a single string. Trailing characters after the first newline character are cut and saved for later. If the end of file is detected, we exit and return 0 ; else 1.
+
+- 'gnl_pipe' will search a specific file descriptor from the static list of 'GNL handlers'. If not found, will create and initialize one for us. Each 'GNL handlers' contains the file decriptor value, a list of strings, and an EOF flag.
 
 # Final Mark
 _Awaiting Evaluation_
