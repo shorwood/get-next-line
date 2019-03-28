@@ -39,7 +39,6 @@
 				"-L/Users/shorwood/LibFt",
 				"-lft"
 			],
-			"dependsOn": ["build-libft"],
 			"problemMatcher": [
 				"$gcc"
 			]
