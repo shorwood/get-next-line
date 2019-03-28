@@ -58,16 +58,6 @@
 			"problemMatcher": []
 		},
 
-		//--- Build the libft.
-		{
-			"label": "build-libft",
-			"type": "shell",
-			"command": "make -C /Users/shorwood/LibFt",
-			"problemMatcher": [
-				"$gcc"
-			]
-		},
-
 		//--- Check the norm of the project.
 		{
 			"label": "norm",
