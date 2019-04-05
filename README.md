@@ -41,15 +41,15 @@ int get_next_line(const int fd, char **line);
 #define BUFF_SIZE 32
 ```
 
-- We consider that get_next_line has an undefined behavior if, between two calls,
+- We consider that get_next_line has an undefined behaviour if, between two calls,
 the same file descriptor designs two distinct files although the reading from the first
 file was not completed.
 
 - We consider also that a call to lseek(2) will never take place between two calls of
 the function get_next_line on the same file descriptor.
 
-- Finally we consider that get_next_line has an undefined behavior when reading
-from a binary file. However, if you wish, you can make this behavior coherent.
+- Finally we consider that get_next_line has an undefined behaviour when reading
+from a binary file. However, if you wish, you can make this behaviour coherent.
 
 - Global variables are forbidden.
 
@@ -67,7 +67,6 @@ The project **get_next_line** is straight forward and leaves very little room fo
 
 - 'gnl_read' will read and push the file strings into a list. All the strings in the list are then assembled into a single string. Trailing characters after the first newline character are cut and saved for later. If the end of file is detected, we exit and return 0 ; else 1.
 
-- 'gnl_pipe' will search a specific file descriptor from the static list of 'GNL handlers'. If not found, will create and initialize one for us. Each 'GNL handlers' contains the file decriptor value, a list of strings, and an EOF flag.
+- 'gnl_pipe' will search a specific file descriptor from the static list of 'GNL handlers'. If not found, will create and initialize one for us. Each 'GNL handlers' contains the file descriptor value, a list of strings, and an EOF flag.
 
-# Final Mark
-_Awaiting Evaluation_
+# Final Mark : `125`
